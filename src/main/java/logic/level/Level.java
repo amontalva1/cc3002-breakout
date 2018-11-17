@@ -3,13 +3,15 @@ package logic.level;
 import logic.brick.Brick;
 
 import java.util.List;
+import java.util.Observer;
+import java.util.Observable;
 
 /**
  * Interface that represents the basics of a level to be played on.
  *
  * @author Juan-Pablo Silva
  */
-public interface Level {
+public interface Level extends Observer {
     /**
      * Gets the level's name. Each level must have a name.
      *

@@ -1,5 +1,7 @@
 package logic.brick;
 import java.util.Observable;
+import logic.level.Level;
+
 
 public class GlassBrick extends Observable implements Brick{
 
