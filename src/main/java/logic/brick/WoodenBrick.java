@@ -1,14 +1,13 @@
 package logic.brick;
-import java.util.Observable;
 import logic.level.Level;
+import java.util.Observable;
 
-
-public class GlassBrick extends Observable implements Brick{
+public class WoodenBrick extends Observable implements Brick {
 
     private int hitLeft;
 
-    public GlassBrick(Level level){
-        hitLeft = 1;
+    public WoodenBrick(Level level){
+        hitLeft = 0;
         addObserver(level);
     }
 
@@ -16,7 +15,7 @@ public class GlassBrick extends Observable implements Brick{
     public void hit() {
         hitLeft--;
         if(isDestroyed()){
-            destroyed();
+           destroyed();
         }
     }
 
@@ -27,7 +26,7 @@ public class GlassBrick extends Observable implements Brick{
 
     @Override
     public int getScore() {
-        return 50;
+        return 200;
     }
 
     @Override

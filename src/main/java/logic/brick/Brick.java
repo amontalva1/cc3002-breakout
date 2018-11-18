@@ -1,7 +1,5 @@
 package logic.brick;
 
-
-
 /**
  * Interface that represents a brick object.
  * <p>
