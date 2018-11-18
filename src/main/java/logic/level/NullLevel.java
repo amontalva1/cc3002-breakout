@@ -3,7 +3,6 @@ package logic.level;
 import logic.brick.Brick;
 
 import java.util.List;
-import java.util.Observable;
 
 public class NullLevel implements Level {
     @Override
@@ -43,7 +42,6 @@ public class NullLevel implements Level {
 
     @Override
     public Level addPlayingLevel(Level level) {
-
         return null;
     }
 
@@ -52,8 +50,4 @@ public class NullLevel implements Level {
 
     }
 
-    @Override
-    public void update(Observable o, Object arg) {
-
-    }
 }

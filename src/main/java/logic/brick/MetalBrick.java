@@ -1,6 +1,7 @@
 package logic.brick;
 
 import logic.level.Level;
+import logic.level.PlayableLevel;
 
 import java.util.Observable;
 
@@ -8,7 +9,7 @@ public class MetalBrick extends Observable implements Brick {
 
     private int hitLeft;
 
-    public MetalBrick(Level level){
+    public MetalBrick(PlayableLevel level){
         hitLeft = 10;
         addObserver(level);
     }

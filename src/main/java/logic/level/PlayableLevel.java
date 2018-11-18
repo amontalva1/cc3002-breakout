@@ -1,5 +1,6 @@
 package logic.level;
 
+import controller.Game;
 import logic.brick.Brick;
 import logic.brick.GlassBrick;
 import logic.brick.MetalBrick;
@@ -7,22 +8,28 @@ import logic.brick.WoodenBrick;
 
 import java.util.*;
 
-public class PlayableLevel implements Level, Observer {
+public class PlayableLevel extends Observable implements Level, Observer {
 
     private List<Brick> bricks;
+    String name;
     int scoreLevel;
+    int currentScoreLevel;
     Level next;
 
-    public PlayableLevel(String name, int numberOfBricks, double probOfGlass, double probOfMetal, int seed){
+    public PlayableLevel(Game game, String name, int numberOfBricks, double probOfGlass, double probOfMetal, int seed){
+        addObserver(game);
         bricks = new ArrayList<>();
         next = new NullLevel();
         scoreLevel = 0;
+        name = name;
         Random r = new Random(seed);
         for(int i = 0; i<numberOfBricks; i++){
             if(r.nextDouble() < probOfGlass){
                 bricks.add(new GlassBrick(this));
+                scoreLevel += 50;
             }else{
                 bricks.add(new WoodenBrick(this));
+                scoreLevel += 200;
             }
             if(r.nextDouble() < probOfMetal){
                 bricks.add(new MetalBrick(this));
@@ -30,9 +37,13 @@ public class PlayableLevel implements Level, Observer {
         }
     }
 
+    public int getCurrentScoreLevel(){
+        return currentScoreLevel;
+    }
+
     @Override
     public String getName() {
-        return null;
+        return name;
     }
 
     @Override
@@ -85,8 +96,13 @@ public class PlayableLevel implements Level, Observer {
     @Override
     public void update(Observable o, Object arg) {
         if(arg instanceof Integer){
-            scoreLevel += (int) arg;
+            currentScoreLevel += (int) arg;
             bricks.remove((Brick) o);
+            brickDestroyed((int) arg);
         }
+    }
+
+    public void brickDestroyed(int brickScore){
+        notifyObservers(brickScore);
     }
 }

@@ -1,13 +1,14 @@
 package logic.brick;
 import java.util.Observable;
 import logic.level.Level;
+import logic.level.PlayableLevel;
 
 
 public class GlassBrick extends Observable implements Brick{
 
     private int hitLeft;
 
-    public GlassBrick(Level level){
+    public GlassBrick(PlayableLevel level){
         hitLeft = 1;
         addObserver(level);
     }

@@ -1,12 +1,14 @@
 package logic.brick;
 import logic.level.Level;
+import logic.level.PlayableLevel;
+
 import java.util.Observable;
 
 public class WoodenBrick extends Observable implements Brick {
 
     private int hitLeft;
 
-    public WoodenBrick(Level level){
+    public WoodenBrick(PlayableLevel level){
         hitLeft = 0;
         addObserver(level);
     }
