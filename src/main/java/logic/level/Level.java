@@ -1,5 +1,6 @@
 package logic.level;
 
+import controller.Game;
 import logic.brick.Brick;
 
 import java.util.List;
@@ -73,4 +74,10 @@ public interface Level {
      * @param level the next level of a level object
      */
     void setNextLevel(Level level);
+
+    /**
+     * Sets the observer of the Observable Level
+     * @param game that is going to be the Observer
+     */
+    void setObserver(Game game);
 }

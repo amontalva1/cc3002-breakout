@@ -1,11 +1,13 @@
 package logic.level;
 
+import controller.Game;
 import logic.brick.Brick;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
 
-public class NullLevel implements Level {
+public class NullLevel extends Observable implements Level {
 
     List<Brick>bricks;
     String name;
@@ -60,6 +62,11 @@ public class NullLevel implements Level {
     @Override
     public void setNextLevel(Level level) {
 
+    }
+
+    @Override
+    public void setObserver(Game game) {
+        addObserver(game);
     }
 
 }

@@ -17,6 +17,7 @@ public class Game implements Observer {
     private int balls;
     private int totalScore;
     private boolean winner = false;
+
     public Game(int balls) {
         currentLevel = new NullLevel();
         totalScore = 0;
@@ -54,19 +55,20 @@ public class Game implements Observer {
     }
 
     public Level createPlayableLevel(String name, int numberOfBricks, double probOfGlass, double probOfMetal, int seed){
-        return new PlayableLevel(this,name, numberOfBricks, probOfGlass, probOfMetal, seed);
+        return new PlayableLevel(name, numberOfBricks, probOfGlass, probOfMetal, seed);
     }
 
     public void addPlayableLevel(Level level){
         if(!currentLevel.isPlayableLevel()){
-            currentLevel = level;
+            setCurrentLevel(level);
         }else{
             currentLevel.addPlayingLevel(level);
         }
     }
 
     public void setCurrentLevel(Level level){
-        this.currentLevel = level;
+        currentLevel = level;
+        currentLevel.setObserver(this);
     }
 
     public void setNextLevel(Level level){
@@ -74,7 +76,7 @@ public class Game implements Observer {
     }
 
     public void goNextLevel(){
-        this.currentLevel = this.currentLevel.getNextLevel();
+        setCurrentLevel(currentLevel.getNextLevel());
     }
 
     /**
@@ -91,11 +93,16 @@ public class Game implements Observer {
     @Override
     public void update(Observable o, Object arg) {
         if(arg instanceof String){
+            //System.out.println("Se elimino un ladrillo puntaje total +=" + (String) arg);
             totalScore+=Integer.valueOf((String)arg);
+            //System.out.println(totalScore);
             if(Integer.valueOf((String)arg) == 0){
                 setBalls(getBalls()+1);
             }
             if(((PlayableLevel) o).getCurrentScoreLevel() == ((PlayableLevel) o).getPoints()){
+                if(!currentLevel.getNextLevel().isPlayableLevel()){
+                    winner = true;
+                }
                 goNextLevel();
             }
         }

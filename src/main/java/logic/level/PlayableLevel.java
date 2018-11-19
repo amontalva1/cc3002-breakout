@@ -16,8 +16,8 @@ public class PlayableLevel extends Observable implements Level, Observer {
     int currentScoreLevel;
     Level next;
 
-    public PlayableLevel(Game game, String name, int numberOfBricks, double probOfGlass, double probOfMetal, int seed){
-        addObserver(game);
+    public PlayableLevel(String name, int numberOfBricks, double probOfGlass, double probOfMetal, int seed){
+        //addObserver(game);
         bricks = new ArrayList<>();
         next = new NullLevel();
         scoreLevel = 0;
@@ -40,6 +40,7 @@ public class PlayableLevel extends Observable implements Level, Observer {
             }
         }
     }
+
 
     public int getCurrentScoreLevel(){
         return currentScoreLevel;
@@ -103,13 +104,19 @@ public class PlayableLevel extends Observable implements Level, Observer {
     }
 
     @Override
+    public void setObserver(Game game) {
+        addObserver(game);
+    }
+
+    @Override
     public void update(Observable o, Object arg) {
         //System.out.println("Se rompio un bloque!!");
 
         if(arg instanceof String){
             currentScoreLevel += Integer.valueOf((String)arg);
             //bricks.remove((Brick) o);
-            notifyObservers(arg);
+            setChanged();
+            notifyObservers((String)arg);
             //brickDestroyed((int) arg);
         }
     }

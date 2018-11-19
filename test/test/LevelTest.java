@@ -20,13 +20,13 @@ public class LevelTest {
     PlayableLevel noMetalLevel;
     PlayableLevel onlyGlassLevel;
     NullLevel nullLevel;
-    Game game;
+   // Game game;
 
     @Before
     public void setUp(){
-        game = new Game(3);
-        noMetalLevel = new PlayableLevel(game, "Test No Metal Level", 10, 0.5, 0, 0);
-        onlyGlassLevel = new PlayableLevel(game, "Test only Glass", 10, 1, 0, 0);
+        //game = new Game(3);
+        noMetalLevel = new PlayableLevel("Test No Metal Level", 10, 0.5, 0, 0);
+        onlyGlassLevel = new PlayableLevel("Test only Glass", 10, 1, 0, 0);
         nullLevel = new NullLevel();
     }
 
