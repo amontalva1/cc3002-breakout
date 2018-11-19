@@ -8,6 +8,10 @@ public class GlassBrick extends Observable implements Brick{
 
     private int hitLeft;
 
+    public GlassBrick(){
+        hitLeft = 1;
+    }
+
     public GlassBrick(PlayableLevel level){
         hitLeft = 1;
         addObserver(level);
@@ -15,9 +19,11 @@ public class GlassBrick extends Observable implements Brick{
 
     @Override
     public void hit() {
-        hitLeft--;
-        if(isDestroyed()){
-            destroyed();
+        if(!isDestroyed()){
+            hitLeft--;
+            if(isDestroyed()){
+                destroyed();
+            }
         }
     }
 
@@ -37,6 +43,8 @@ public class GlassBrick extends Observable implements Brick{
     }
 
     public void destroyed(){
-        notifyObservers(getScore());
+        setChanged();
+        //System.out.println("Se rompio un bloque aaaah!! " + getScore());
+        notifyObservers(String.valueOf(getScore()));
     }
 }

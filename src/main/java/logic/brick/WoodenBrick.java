@@ -8,16 +8,22 @@ public class WoodenBrick extends Observable implements Brick {
 
     private int hitLeft;
 
+    public WoodenBrick(){
+        hitLeft = 3;
+    }
+
     public WoodenBrick(PlayableLevel level){
-        hitLeft = 0;
+        hitLeft = 3;
         addObserver(level);
     }
 
     @Override
     public void hit() {
-        hitLeft--;
-        if(isDestroyed()){
-           destroyed();
+        if(!isDestroyed()){
+            hitLeft--;
+            if(isDestroyed()){
+                destroyed();
+            }
         }
     }
 
@@ -37,6 +43,8 @@ public class WoodenBrick extends Observable implements Brick {
     }
 
     public void destroyed(){
-        notifyObservers(getScore());
+        setChanged();
+        //System.out.println("Se rompio un bloque aaaah!! " + getScore());
+        notifyObservers(String.valueOf(getScore()));
     }
 }

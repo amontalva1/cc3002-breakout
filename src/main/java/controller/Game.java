@@ -14,9 +14,9 @@ import java.util.Observer;
  */
 public class Game implements Observer {
     private Level currentLevel;
-    int balls;
-    int totalScore;
-    boolean winner = false;
+    private int balls;
+    private int totalScore;
+    private boolean winner = false;
     public Game(int balls) {
         currentLevel = new NullLevel();
         totalScore = 0;
@@ -27,8 +27,21 @@ public class Game implements Observer {
         return balls;
     }
 
+    public void setBalls(int n){
+        balls = n;
+    }
+
     public int dropBalls(){
-        balls--;
+        if(balls>0){
+            balls--;
+        }
+        return getBalls();
+    }
+
+    public int increaseBalls(){
+        if(balls > 0){
+            balls++;
+        }
         return getBalls();
     }
 
@@ -52,10 +65,16 @@ public class Game implements Observer {
         }
     }
 
-    public void setNextLevel(){
-        if(totalScore == currentLevel.getPoints() && currentLevel.hasNextLevel()){
-            currentLevel = currentLevel.getNextLevel();
-        }
+    public void setCurrentLevel(Level level){
+        this.currentLevel = level;
+    }
+
+    public void setNextLevel(Level level){
+        this.currentLevel.setNextLevel(level);
+    }
+
+    public void goNextLevel(){
+        this.currentLevel = this.currentLevel.getNextLevel();
     }
 
     /**
@@ -71,10 +90,13 @@ public class Game implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-        if(arg instanceof Integer){
-            totalScore+=(int)arg;
-            if(((PlayableLevel) o).getCurrentScoreLevel() == ((PlayableLevel) o).getCurrentScoreLevel()){
-                setNextLevel();
+        if(arg instanceof String){
+            totalScore+=Integer.valueOf((String)arg);
+            if(Integer.valueOf((String)arg) == 0){
+                setBalls(getBalls()+1);
+            }
+            if(((PlayableLevel) o).getCurrentScoreLevel() == ((PlayableLevel) o).getPoints()){
+                goNextLevel();
             }
         }
     }

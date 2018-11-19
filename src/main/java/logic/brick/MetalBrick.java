@@ -9,6 +9,10 @@ public class MetalBrick extends Observable implements Brick {
 
     private int hitLeft;
 
+    public MetalBrick(){
+        hitLeft = 10;
+    }
+
     public MetalBrick(PlayableLevel level){
         hitLeft = 10;
         addObserver(level);
@@ -16,9 +20,11 @@ public class MetalBrick extends Observable implements Brick {
 
     @Override
     public void hit() {
-        hitLeft--;
-        if(hitLeft == 0){
-            destroyed();
+        if(!isDestroyed()){
+            hitLeft--;
+            if(isDestroyed()){
+                destroyed();
+            }
         }
     }
 
@@ -38,6 +44,7 @@ public class MetalBrick extends Observable implements Brick {
     }
 
     public void destroyed(){
-        notifyObservers(getScore());
-    }
-}
+        setChanged();
+        //System.out.println("Se rompio un bloque aaaah!! " + getScore());
+        notifyObservers(String.valueOf(getScore()));
+    }}

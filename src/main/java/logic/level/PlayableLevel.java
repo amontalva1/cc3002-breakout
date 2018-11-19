@@ -21,17 +21,21 @@ public class PlayableLevel extends Observable implements Level, Observer {
         bricks = new ArrayList<>();
         next = new NullLevel();
         scoreLevel = 0;
-        name = name;
+        this.name = name;
         Random r = new Random(seed);
         for(int i = 0; i<numberOfBricks; i++){
-            if(r.nextDouble() < probOfGlass){
+            Double d = r.nextDouble();
+            if(d <= probOfGlass){
                 bricks.add(new GlassBrick(this));
                 scoreLevel += 50;
             }else{
                 bricks.add(new WoodenBrick(this));
                 scoreLevel += 200;
             }
-            if(r.nextDouble() < probOfMetal){
+        }
+        for(int i = 0; i<numberOfBricks; i++){
+            Double d = r.nextDouble();
+            if(d < probOfMetal){
                 bricks.add(new MetalBrick(this));
             }
         }
@@ -78,27 +82,35 @@ public class PlayableLevel extends Observable implements Level, Observer {
 
     @Override
     public Level addPlayingLevel(Level level) {
-        if(this.next.isPlayableLevel()){
-            addPlayingLevel(next);
-        }else{
-            next = level;
+
+        Level aux = this;
+        while (aux.getNextLevel().isPlayableLevel()) {
+            aux = aux.getNextLevel();
         }
+        aux.setNextLevel(level);
         return null;
     }
 
+
+
+
+
+
+
     @Override
     public void setNextLevel(Level level) {
-        if(next.isPlayableLevel()){
-            //this = (PlayableLevel) next;
-        }
+        next = level;
     }
 
     @Override
     public void update(Observable o, Object arg) {
-        if(arg instanceof Integer){
-            currentScoreLevel += (int) arg;
-            bricks.remove((Brick) o);
-            brickDestroyed((int) arg);
+        //System.out.println("Se rompio un bloque!!");
+
+        if(arg instanceof String){
+            currentScoreLevel += Integer.valueOf((String)arg);
+            //bricks.remove((Brick) o);
+            notifyObservers(arg);
+            //brickDestroyed((int) arg);
         }
     }
 

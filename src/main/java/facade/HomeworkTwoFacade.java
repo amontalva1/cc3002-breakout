@@ -32,7 +32,7 @@ public class HomeworkTwoFacade {
      * @see Level
      */
     public Level newLevelWithBricksFull(String name, int numberOfBricks, double probOfGlass, double probOfMetal, int seed) {
-        return null;
+        return game.createPlayableLevel(name, numberOfBricks, probOfGlass, probOfMetal, seed);
     }
 
     /**
@@ -80,7 +80,7 @@ public class HomeworkTwoFacade {
      * Pass to the next level of the current {@link Level}. Ignores all conditions and skip to the next level.
      */
     public void goNextLevel() {
-        game.setNextLevel();
+        game.goNextLevel();
     }
 
     /**
@@ -118,7 +118,7 @@ public class HomeworkTwoFacade {
      * @see Level
      */
     public void setCurrentLevel(Level level) {
-
+        game.setCurrentLevel(level);
     }
 
     /**
@@ -136,7 +136,7 @@ public class HomeworkTwoFacade {
      * @return the number of points in the current level
      */
     public int getLevelPoints() {
-        return ((PlayableLevel)game.getCurrentLevel()).getCurrentScoreLevel();
+        return game.getCurrentLevel().getPoints();
     }
 
     /**

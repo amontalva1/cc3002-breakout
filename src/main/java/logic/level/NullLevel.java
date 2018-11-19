@@ -2,27 +2,39 @@ package logic.level;
 
 import logic.brick.Brick;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class NullLevel implements Level {
+
+    List<Brick>bricks;
+    String name;
+    int scoreLevel;
+
+    public NullLevel(){
+        bricks = new ArrayList<Brick>();
+        name = "";
+        scoreLevel = 0;
+    }
+
     @Override
     public String getName() {
-        return null;
+        return name;
     }
 
     @Override
     public int getNumberOfBricks() {
-        return 0;
+        return bricks.size();
     }
 
     @Override
     public List<Brick> getBricks() {
-        return null;
+        return bricks;
     }
 
     @Override
     public Level getNextLevel() {
-        return null;
+        return this;
     }
 
     @Override
@@ -37,7 +49,7 @@ public class NullLevel implements Level {
 
     @Override
     public int getPoints() {
-        return 0;
+        return scoreLevel;
     }
 
     @Override
