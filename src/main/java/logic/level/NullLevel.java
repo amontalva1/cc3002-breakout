@@ -18,7 +18,9 @@ public class NullLevel extends Observable implements Level {
     private String name;
     private int scoreLevel;
 
-
+    /**
+     * NullLevel constructor
+     */
     public NullLevel(){
         bricks = new ArrayList<Brick>();
         name = "";
