@@ -4,9 +4,14 @@ import logic.level.PlayableLevel;
 
 import java.util.Observable;
 
+/**
+ * WoodenBrick is a Brick Class that implements every method on Brick Interface
+ * @author Antonio Montalva
+ */
 public class WoodenBrick extends Observable implements Brick {
 
     private int hitLeft;
+
 
     public WoodenBrick(){
         hitLeft = 3;
@@ -42,9 +47,11 @@ public class WoodenBrick extends Observable implements Brick {
         return hitLeft;
     }
 
+    /**
+     * Method that notify the Observers on Brick Destruction, and pass the Score of the Brick to the Observer
+     */
     public void destroyed(){
         setChanged();
-        //System.out.println("Se rompio un bloque aaaah!! " + getScore());
-        notifyObservers(String.valueOf(getScore()));
+        notifyObservers(getScore());
     }
 }

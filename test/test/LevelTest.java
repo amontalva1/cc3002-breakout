@@ -20,11 +20,9 @@ public class LevelTest {
     PlayableLevel noMetalLevel;
     PlayableLevel onlyGlassLevel;
     NullLevel nullLevel;
-   // Game game;
 
     @Before
     public void setUp(){
-        //game = new Game(3);
         noMetalLevel = new PlayableLevel("Test No Metal Level", 10, 0.5, 0, 0);
         onlyGlassLevel = new PlayableLevel("Test only Glass", 10, 1, 0, 0);
         nullLevel = new NullLevel();
@@ -33,6 +31,7 @@ public class LevelTest {
     @Test
     public void nullLevelTest(){
         assertFalse(nullLevel.isPlayableLevel());
+        assertEquals(nullLevel, nullLevel.getNextLevel());
         assertEquals(new ArrayList<Brick>(), nullLevel.getBricks());
         assertEquals("", nullLevel.getName());
         assertTrue(!nullLevel.hasNextLevel());

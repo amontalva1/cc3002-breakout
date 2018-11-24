@@ -8,14 +8,26 @@ import logic.brick.WoodenBrick;
 
 import java.util.*;
 
+/**
+ * PlayableLevel Class is the implementation of a Level that can be played and has fields and method that allows so
+ * @author Antonio Montalva
+ */
 public class PlayableLevel extends Observable implements Level, Observer {
 
     private List<Brick> bricks;
-    String name;
-    int scoreLevel;
-    int currentScoreLevel;
-    Level next;
+    private String name;
+    private int scoreLevel;
+    private int currentScoreLevel;
+    private Level next;
 
+    /**
+     * PlayableLevel constructor
+     * @param name String value, name of the level to create
+     * @param numberOfBricks Integer value, ammount of Bricks to create on the Level
+     * @param probOfGlass Double value, probability of one of the Bricks to create to be GlassBrick type
+     * @param probOfMetal Double value, probability per Brick to create to generate one extra MetalBrick brick type
+     * @param seed Integer value, seed to generate constant random numbers for testing purposes
+     */
     public PlayableLevel(String name, int numberOfBricks, double probOfGlass, double probOfMetal, int seed){
         //addObserver(game);
         bricks = new ArrayList<>();
@@ -41,7 +53,10 @@ public class PlayableLevel extends Observable implements Level, Observer {
         }
     }
 
-
+    /**
+     * Method that returns the Score got in the Level so far
+     * @return int value
+     */
     public int getCurrentScoreLevel(){
         return currentScoreLevel;
     }
@@ -110,18 +125,11 @@ public class PlayableLevel extends Observable implements Level, Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-        //System.out.println("Se rompio un bloque!!");
-
-        if(arg instanceof String){
-            currentScoreLevel += Integer.valueOf((String)arg);
-            //bricks.remove((Brick) o);
+        if(arg instanceof Integer){
+            currentScoreLevel += (int) arg;
             setChanged();
-            notifyObservers((String)arg);
-            //brickDestroyed((int) arg);
+            notifyObservers(arg);
         }
     }
 
-    public void brickDestroyed(int brickScore){
-        notifyObservers(brickScore);
-    }
 }

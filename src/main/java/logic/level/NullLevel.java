@@ -7,11 +7,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 
+/**
+ * NullLevel is the Null implementation of Level that allows to
+ * define the behavior of a Null Object, helping us to avoid comparisons with Null
+ * @author Antonio Montalva
+ */
 public class NullLevel extends Observable implements Level {
 
-    List<Brick>bricks;
-    String name;
-    int scoreLevel;
+    private List<Brick>bricks;
+    private String name;
+    private int scoreLevel;
+
 
     public NullLevel(){
         bricks = new ArrayList<Brick>();
