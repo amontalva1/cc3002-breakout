@@ -11,13 +11,12 @@ import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.settings.GameSettings;
 import facade.HomeworkTwoFacade;
 import javafx.geometry.Point2D;
-import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import logic.brick.Brick;
-import logic.level.PlayableLevel;
+import logic.level.Level;
 
 import java.util.*;
 
@@ -30,6 +29,8 @@ public class BasicGameApp extends GameApplication {
     HashMap<Entity, Brick>bricksOnScreen;
     int[] posPlayer;
     private Text uiText;
+    private Text uiText2;
+    Level lastLevel;
 
     @Override
     protected void initSettings(GameSettings gameSettings) {
@@ -51,6 +52,7 @@ public class BasicGameApp extends GameApplication {
         Entity walls = newWalls();
         getGameWorld().addEntities(player, bg, ball, walls);
         game = new HomeworkTwoFacade();
+        lastLevel = game.getCurrentLevel();
         gameState = 0;
         bricksOnScreen = new HashMap<>();
 
@@ -58,10 +60,16 @@ public class BasicGameApp extends GameApplication {
     @Override
     protected void initUI(){
         uiText = new Text();
+        uiText2 = new Text();
         uiText.setFont(Font.font(18));
+        uiText2.setFont(Font.font(24));
         getGameScene().addUINode(uiText);
+        getGameScene().addUINode(uiText2);
         DSLKt.centerText(uiText);
+        DSLKt.centerText(uiText2);
         uiText.setText("0");
+        uiText2.setY(uiText2.getY()+100);
+        uiText2.setX(uiText2.getX()-100);
     }
 
     public static void main(String[] args) {
@@ -131,6 +139,8 @@ public class BasicGameApp extends GameApplication {
             @Override
             protected void onAction(){
                 if(gameState == 0 && bricksOnScreen.size()==0 && game.hasNextLevel()){
+                    game.goNextLevel();
+                    lastLevel = game.getCurrentLevel();
                     gameState = 1;
                     clearBricks();
                     setUpLevel();
@@ -146,7 +156,7 @@ public class BasicGameApp extends GameApplication {
         input.addAction(new UserAction("Add Level") {
             @Override
             protected void onAction(){
-                game.addPlayingLevel(game.newLevelWithBricksFull("Add level", 1, 0.9, 0.1, 1));
+                game.addPlayingLevel(game.newLevelWithBricksFull("Add level", 4, 0.9, 0.1, 1));
             }
 
         }, KeyCode.N);
@@ -218,16 +228,23 @@ public class BasicGameApp extends GameApplication {
                     @Override
                     protected void onHitBoxTrigger(Entity brick, Entity ball, HitBox boxBrick, HitBox boxBall) {
                         ball.getComponent(PhysicsComponent.class).setLinearVelocity(ball.getComponent(PhysicsComponent.class).getVelocityX() > 0 ? 5*60 : -5*60, -ball.getComponent(PhysicsComponent.class).getVelocityY() > 0 ? 5*60 : -5*60);
+                        System.out.println("El nivel previo al destruir es: " + game.getCurrentLevel());
                         bricksOnScreen.get(brick).hit();
                         if(bricksOnScreen.get(brick).isDestroyed()){
+                            System.out.println("El nivel posterior al destruir es: " +game.getCurrentLevel());
                             brick.removeFromWorld();
                             bricksOnScreen.remove(brick);
-                            if(game.getLevelPoints() == ((PlayableLevel)game.getCurrentLevel()).getCurrentScoreLevel()){
+                            if(game.getCurrentLevel() != lastLevel){
                                 clearBricks();
+                                lastLevel = game.getCurrentLevel();
                                 setUpLevel();
                             }
                         }
                         uiText.setText(String.valueOf(game.getCurrentPoints()));
+                        if(game.winner()){
+                            DSLKt.centerText(uiText2);
+                            uiText2.setText("GANASTEEEEEEEEEEEEEEEEEEEEE");
+                        }
                     }
                 }
         );
@@ -236,30 +253,25 @@ public class BasicGameApp extends GameApplication {
 
 
     public void setUpLevel(){
-        if(game.hasNextLevel()){
-            game.goNextLevel();
-            int x = 0;
-            int y = 0;
-            Collections.shuffle(game.getBricks());
-            for(Brick b : game.getBricks()) {
-                Entity brick;
-                if (b.getScore() == 0){
-                    brick = newBrick(x,y, Color.GRAY);
-                }else if(b.getScore() == 50){
-                    brick = newBrick(x,y, Color.LIGHTBLUE);
-                }else{
-                    brick = newBrick(x,y, Color.BROWN);
-                }
-                bricksOnScreen.put(brick, b);
-                getGameWorld().addEntity(brick);
-                x+=brick.getWidth();
-                if(x>=800){
-                    x = 0;
-                    y += brick.getHeight();
-                }
+        int x = 0;
+        int y = 0;
+        Collections.shuffle(game.getBricks());
+        for(Brick b : game.getBricks()) {
+            Entity brick;
+            if (b.getScore() == 0){
+                brick = newBrick(x,y, Color.GRAY);
+            }else if(b.getScore() == 50){
+                brick = newBrick(x,y, Color.LIGHTBLUE);
+            }else{
+                brick = newBrick(x,y, Color.BROWN);
             }
-        }else{
-            System.out.println("GANASTEE");
+            bricksOnScreen.put(brick, b);
+            getGameWorld().addEntity(brick);
+            x+=brick.getWidth();
+            if(x>=800){
+                x = 0;
+                y += brick.getHeight();
+            }
         }
     }
 
@@ -267,8 +279,6 @@ public class BasicGameApp extends GameApplication {
         getGameWorld().getEntitiesByType(ExampleType.BRICK).forEach(e -> e.removeFromWorld());
         bricksOnScreen.clear();
     }
-
-
 
 }
 
