@@ -3,6 +3,7 @@ package gui;
 import com.almasb.fxgl.app.DSLKt;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.components.SelectableComponent;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.particle.ParticleComponent;
@@ -16,7 +17,6 @@ import facade.HomeworkTwoFacade;
 import javafx.geometry.Point2D;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.input.KeyCode;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import logic.brick.Brick;
@@ -62,7 +62,9 @@ public class BasicGameApp extends GameApplication {
         gameState = 0;
         gameLost = 0;
         bricksOnScreen = new HashMap<>();
-
+        getGameWorld().selectedEntityProperty().addListener((o, oldEntity, newEntity) -> {
+            hit(getGameWorld().getSelectedEntity().get());
+        });
     }
     @Override
     protected void initUI(){
@@ -151,14 +153,7 @@ public class BasicGameApp extends GameApplication {
             @Override
             protected void onAction(){
                 uiText3.setText("Balls: " + game.getBallsLeft());
-                if(gameLost != 1 && gameState == 0 && bricksOnScreen.size()==0 && game.hasNextLevel()){
-                    game.goNextLevel();
-                    lastLevel = game.getCurrentLevel();
-                    gameState = 1;
-                    clearBricks();
-                    setUpLevel();
-                    getGameWorld().getEntitiesByType(ExampleType.BALL).get(0).getComponent(PhysicsComponent.class).setLinearVelocity(5 * 60, -5 * 60);
-                }else if(gameLost != 1 && gameState == 0 && bricksOnScreen.size() > 0){
+                if(gameLost != 1 && gameState == 0 && bricksOnScreen.size() > 0){
                     gameState = 1;
                     getGameWorld().getEntitiesByType(ExampleType.BALL).get(0).getComponent(PhysicsComponent.class).setLinearVelocity(5 * 60, -5 * 60);
                 }
@@ -179,10 +174,16 @@ public class BasicGameApp extends GameApplication {
         input.addAction(new UserAction("Add Level") {
             @Override
             protected void onAction(){
-                game.addPlayingLevel(game.newLevelWithBricksFull("Add level", 10, 0.4, 0.3, 1));
-            }
+                game.addPlayingLevel(game.newLevelWithBricksFull("Add level", 20, 0.6, 0.2, 1));
 
-        }, KeyCode.N);
+                if(gameLost != 1 && gameState == 0 && bricksOnScreen.size()==0 && game.hasNextLevel()){
+                    game.goNextLevel();
+                    lastLevel = game.getCurrentLevel();
+                    clearBricks();
+                    setUpLevel();
+                }
+        }}, KeyCode.N);
+
 
     }
 
@@ -229,47 +230,49 @@ public class BasicGameApp extends GameApplication {
                 new CollisionHandler(ExampleType.BRICK, ExampleType.BALL) {
                     @Override
                     protected void onHitBoxTrigger(Entity brick, Entity ball, HitBox boxBrick, HitBox boxBall) {
-                        bricksOnScreen.get(brick).hit();
-                        getGameWorld().getEntitiesByType(ExampleType.PARTICLE).forEach(entity -> getGameWorld().removeEntity(entity));
-                        hitParticle(ball.getX(), ball.getY());
-                        if(bricksOnScreen.get(brick).isDestroyed()){
-                            getAudioPlayer().playSound("glasshit.wav");
-                            brick.removeFromWorld();
-                            bricksOnScreen.remove(brick);
-                            if(game.getCurrentLevel() != lastLevel){
-                                clearBricks();
-                                lastLevel = game.getCurrentLevel();
-                                setUpLevel();
-                            }
-                        }else{
-                            if(bricksOnScreen.get(brick).getScore() == 0){
-                                getAudioPlayer().playSound("metalhit.wav");
-                            }else{
-                                getAudioPlayer().playSound("woodenhit.wav");
-                            }
-                            if(bricksOnScreen.get(brick).remainingHits() == 7){
-                                brick.setViewFromTexture("metalbrick2.png");
-                            }else if(bricksOnScreen.get(brick).remainingHits() == 3){
-                                brick.setViewFromTexture("metalbrick3.png");
-                            }else if(bricksOnScreen.get(brick).remainingHits() == 1 && bricksOnScreen.get(brick).getScore() == 300){
-                                brick.setViewFromTexture("woodenbrick2.png");
-                            }
-                        }
-                        uiText.setText(String.valueOf(game.getCurrentPoints()));
-                        uiText3.setText("Balls: " + game.getBallsLeft());
-                        if(game.winner()){
-                            DSLKt.centerText(uiText2);
-                            getAudioPlayer().playMusic("victory.mp3");
-                            gameLost = 1;
-                            getGameWorld().getEntitiesByType(ExampleType.BALL).get(0).getComponent(PhysicsComponent.class).setLinearVelocity(0,0);
-                            uiText2.setText("GANASTEEEEEEEEEEEEE, R para reiniciar");
-                        }
+                        hit(brick);
                     }
                 }
         );
 
     }
 
+    public void hit(Entity brick){
+        bricksOnScreen.get(brick).hit();
+        hitParticle(brick.getX(), brick.getY());
+        if(bricksOnScreen.get(brick).isDestroyed()){
+            getAudioPlayer().playSound("glasshit.wav");
+            brick.removeFromWorld();
+            bricksOnScreen.remove(brick);
+            if(game.getCurrentLevel() != lastLevel){
+                clearBricks();
+                lastLevel = game.getCurrentLevel();
+                setUpLevel();
+            }
+        }else{
+            if(bricksOnScreen.get(brick).getScore() == 0){
+                getAudioPlayer().playSound("metalhit.wav");
+            }else{
+                getAudioPlayer().playSound("woodenhit.wav");
+            }
+            if(bricksOnScreen.get(brick).remainingHits() == 7){
+                brick.setViewFromTexture("metalbrick2.png");
+            }else if(bricksOnScreen.get(brick).remainingHits() == 3){
+                brick.setViewFromTexture("metalbrick3.png");
+            }else if(bricksOnScreen.get(brick).remainingHits() == 1 && bricksOnScreen.get(brick).getScore() == 200){
+                brick.setViewFromTexture("woodenbrick2.png");
+            }
+        }
+        uiText.setText(String.valueOf(game.getCurrentPoints()));
+        uiText3.setText("Balls: " + game.getBallsLeft());
+        if(game.winner()){
+            DSLKt.centerText(uiText2);
+            getAudioPlayer().playMusic("victory.mp3");
+            gameLost = 1;
+            getGameWorld().getEntitiesByType(ExampleType.BALL).get(0).getComponent(PhysicsComponent.class).setLinearVelocity(0,0);
+            uiText2.setText("GANASTEEEEEEEEEEEEE, R para reiniciar");
+        }
+    }
 
     public void setUpLevel(){
         int x = 0;
