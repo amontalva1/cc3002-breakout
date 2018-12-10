@@ -9,6 +9,7 @@ import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.physics.box2d.dynamics.BodyType;
 import com.almasb.fxgl.physics.box2d.dynamics.FixtureDef;
+import com.almasb.fxgl.texture.Texture;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
@@ -19,7 +20,8 @@ public class ExampleGameFactory {
         PLAYER,
         BALL,
         WALL,
-        BRICK
+        BRICK,
+        PARTICLE
     }
 
     public static Entity newPlayer(double x, double y) {
@@ -60,14 +62,25 @@ public class ExampleGameFactory {
         return walls;
     }
 
-    public static Entity newBrick(int x, int y, Color color){
+    public static Entity newBrick(int x, int y, String texture){
+        PhysicsComponent physics = new PhysicsComponent();
+        physics.setOnPhysicsInitialized(() -> physics.setLinearVelocity(0,0));
+        physics.setBodyType(BodyType.STATIC);
+        physics.setFixtureDef(new FixtureDef().restitution(1f).density(0.1f).friction(0f));
         return Entities.builder()
                 .at(x, y)
                 .type(ExampleType.BRICK)
-                .bbox(new HitBox("Player", BoundingShape.box(90, 40)))
-                .viewFromNode(new Rectangle(90, 40, color))
-                .with( new CollidableComponent(true))
+                .bbox(new HitBox("Brick", BoundingShape.box(90, 40)))
+                .viewFromTexture(texture)
+                //.viewFromNode(new Rectangle(90, 40, color))
+                .with(physics, new CollidableComponent(true))
                 .build();
+    }
+
+    public static Entity newParticle(){
+        Entity newEntity = new Entity();
+        newEntity.setType(ExampleType.PARTICLE);
+        return newEntity;
     }
 
 
