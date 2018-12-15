@@ -14,9 +14,16 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 
-public class ExampleGameFactory {
+/**
+ * GameFactory is a class that generates Entity objects for the GameApplication
+ * following the Factory programming pattern, allowing to separate the repetitive
+ * process of creating the differents kind of Entity needed by the GameApplication to work
+ * @author Antonio Montalva
+ */
 
-    public enum ExampleType {
+public class GameFactory {
+
+    public enum EntityType {
         PLAYER,
         BALL,
         WALL,
@@ -27,7 +34,7 @@ public class ExampleGameFactory {
     public static Entity newPlayer(double x, double y) {
         return Entities.builder()
                 .at(x, y)
-                .type(ExampleType.PLAYER)
+                .type(EntityType.PLAYER)
                 .bbox(new HitBox("Player", BoundingShape.box(100, 30)))
                 .viewFromNode(new Rectangle(100, 30, Color.BLUE))
                 .with( new CollidableComponent(true))
@@ -48,7 +55,7 @@ public class ExampleGameFactory {
         physics.setFixtureDef(new FixtureDef().restitution(1f).density(0.1f).friction(0f));
         return Entities.builder()
                 .at(x, y)
-                .type(ExampleType.BALL)
+                .type(EntityType.BALL)
                 .bbox(new HitBox("Ball", BoundingShape.circle(10)))
                 .viewFromNode(new Circle(10, Color.LIGHTCORAL))
                 .with(physics, new CollidableComponent(true))
@@ -57,7 +64,7 @@ public class ExampleGameFactory {
 
     public static Entity newWalls() {
         Entity walls = Entities.makeScreenBounds(100);
-        walls.setType(ExampleType.WALL);
+        walls.setType(EntityType.WALL);
         walls.addComponent(new CollidableComponent(true));
         return walls;
     }
@@ -69,7 +76,7 @@ public class ExampleGameFactory {
         physics.setFixtureDef(new FixtureDef().restitution(1f).density(0.1f).friction(0f));
         return Entities.builder()
                 .at(x, y)
-                .type(ExampleType.BRICK)
+                .type(EntityType.BRICK)
                 .bbox(new HitBox("Brick", BoundingShape.box(90, 40)))
                 .viewFromTexture(texture)
                 //.viewFromNode(new Rectangle(90, 40, color))
@@ -79,7 +86,7 @@ public class ExampleGameFactory {
 
     public static Entity newParticle(){
         Entity newEntity = new Entity();
-        newEntity.setType(ExampleType.PARTICLE);
+        newEntity.setType(EntityType.PARTICLE);
         return newEntity;
     }
 

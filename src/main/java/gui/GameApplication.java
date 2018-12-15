@@ -1,9 +1,7 @@
 package gui;
 
 import com.almasb.fxgl.app.DSLKt;
-import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.components.SelectableComponent;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.particle.ParticleComponent;
@@ -24,35 +22,41 @@ import logic.level.Level;
 
 import java.util.*;
 
-import static gui.ExampleGameFactory.*;
+import static gui.GameFactory.*;
 
-public class BasicGameApp extends GameApplication {
+/**
+ * GameApplication has all the control of the graphical
+ * user interface of the Breakout Game, it doesnt modify any
+ * of the logic of the game but makes use of the HomeworkTwoFacade
+ * class in which you can easily access to pretty much every logic component
+ * of the game. It has 2 access other classes of the logic package but in a
+ * slightly way, in order to fix the problem of advancing level easily.
+ * @author Antonio Montalva
+ */
 
-    int gameState;
-    int gameLost;
+public class GameApplication extends com.almasb.fxgl.app.GameApplication {
+
+    private int gameState;
+    private int gameLost;
     private HomeworkTwoFacade game;
     private HashMap<Entity, Brick>bricksOnScreen;
-    float[] posPlayer;
     private Text uiText;
     private Text uiText2;
     private Text uiText3;
-    Level lastLevel;
+    private Level lastLevel;
 
     @Override
     protected void initSettings(GameSettings gameSettings) {
         gameSettings.setWidth(800);
         gameSettings.setHeight(600);
-        gameSettings.setTitle("Basic Game App");
-        gameSettings.setVersion("0.1");
+        gameSettings.setTitle("Game App");
+        gameSettings.setVersion("1.0");
 
     }
 
     @Override
     protected void initGame() {
-        posPlayer = new float[2];
-        posPlayer[0] = 300;
-        posPlayer[1] = 550;
-        Entity player = newPlayer(posPlayer[0], posPlayer[1]);
+        Entity player = newPlayer(300, 550);
         Entity ball = newBall(player.getX()+player.getWidth()/2, player.getY()-player.getHeight()/2);
         Entity bg = newBackground();
         Entity walls = newWalls();
@@ -97,27 +101,25 @@ public class BasicGameApp extends GameApplication {
             @Override
             protected void onAction() {
 
-                if (gameLost != 1 && gameState != 5 && getGameWorld().getEntitiesByType(ExampleType.BALL).get(0).getComponent(PhysicsComponent.class).getVelocityY() == 0 &&
-                        getGameWorld().getEntitiesByType(ExampleType.BALL).get(0).getComponent(PhysicsComponent.class).getVelocityX() == 0){
-                    if(getGameWorld().getEntitiesByType(ExampleGameFactory.ExampleType.PLAYER).get(0).getX() < 700){
-                        getGameWorld().getEntitiesByType(ExampleGameFactory.ExampleType.PLAYER)
+                if (gameLost != 1 && gameState != 5 && getGameWorld().getEntitiesByType(EntityType.BALL).get(0).getComponent(PhysicsComponent.class).getVelocityY() == 0 &&
+                        getGameWorld().getEntitiesByType(EntityType.BALL).get(0).getComponent(PhysicsComponent.class).getVelocityX() == 0){
+                    if(getGameWorld().getEntitiesByType(GameFactory.EntityType.PLAYER).get(0).getX() < 700){
+                        getGameWorld().getEntitiesByType(GameFactory.EntityType.PLAYER)
                                 .forEach(e -> e.translateX(5));
-                        getGameWorld().getEntitiesByType(ExampleGameFactory.ExampleType.BALL)
+                        getGameWorld().getEntitiesByType(GameFactory.EntityType.BALL)
                                 .get(0).getComponent(PhysicsComponent.class).reposition(
-                                        new Point2D(getGameWorld().getEntitiesByType(ExampleGameFactory.ExampleType.BALL)
-                                                .get(0).getX()+5, getGameWorld().getEntitiesByType(ExampleGameFactory.ExampleType.BALL)
+                                        new Point2D(getGameWorld().getEntitiesByType(GameFactory.EntityType.BALL)
+                                                .get(0).getX()+5, getGameWorld().getEntitiesByType(GameFactory.EntityType.BALL)
                                                 .get(0).getY())
                         );
-                        posPlayer[0]+=5;
                     }
                 }
 
                 else{
-                    if(gameLost != 1 && gameState != 0 && getGameWorld().getEntitiesByType(ExampleGameFactory.ExampleType.PLAYER).get(0).getX() < 700){
-                        getGameWorld().getEntitiesByType(ExampleGameFactory.ExampleType.PLAYER)
+                    if(gameLost != 1 && gameState != 0 && getGameWorld().getEntitiesByType(GameFactory.EntityType.PLAYER).get(0).getX() < 700){
+                        getGameWorld().getEntitiesByType(GameFactory.EntityType.PLAYER)
                                 .forEach(e -> e.translateX(5));
                     }
-                    posPlayer[0]+=5;
                 }
             }
         }, KeyCode.D);
@@ -125,26 +127,24 @@ public class BasicGameApp extends GameApplication {
         input.addAction(new UserAction("Move Left") {
             @Override
             protected void onAction() {
-                if (gameLost != 1 && gameState != 5 && getGameWorld().getEntitiesByType(ExampleType.BALL).get(0).getComponent(PhysicsComponent.class).getVelocityY() == 0 &&
-                        getGameWorld().getEntitiesByType(ExampleType.BALL).get(0).getComponent(PhysicsComponent.class).getVelocityX() == 0){
-                    if(getGameWorld().getEntitiesByType(ExampleGameFactory.ExampleType.PLAYER).get(0).getX() > 0){
-                        getGameWorld().getEntitiesByType(ExampleGameFactory.ExampleType.PLAYER)
+                if (gameLost != 1 && gameState != 5 && getGameWorld().getEntitiesByType(EntityType.BALL).get(0).getComponent(PhysicsComponent.class).getVelocityY() == 0 &&
+                        getGameWorld().getEntitiesByType(EntityType.BALL).get(0).getComponent(PhysicsComponent.class).getVelocityX() == 0){
+                    if(getGameWorld().getEntitiesByType(GameFactory.EntityType.PLAYER).get(0).getX() > 0){
+                        getGameWorld().getEntitiesByType(GameFactory.EntityType.PLAYER)
                                 .forEach(e -> e.translateX(-5));
-                        getGameWorld().getEntitiesByType(ExampleGameFactory.ExampleType.BALL)
+                        double posPlayerX = getGameWorld().getEntitiesByType(EntityType.PLAYER).get(0).getX() + getGameWorld().getEntitiesByType(EntityType.PLAYER).get(0).getWidth()/2;
+                        double posPlayerY = getGameWorld().getEntitiesByType(EntityType.PLAYER).get(0).getY()-getGameWorld().getEntitiesByType(EntityType.PLAYER).get(0).getHeight()/2;
+                        getGameWorld().getEntitiesByType(GameFactory.EntityType.BALL)
                                 .get(0).getComponent(PhysicsComponent.class).reposition(
-                                new Point2D(getGameWorld().getEntitiesByType(ExampleGameFactory.ExampleType.BALL)
-                                        .get(0).getX()-5, getGameWorld().getEntitiesByType(ExampleGameFactory.ExampleType.BALL)
-                                        .get(0).getY())
+                                new Point2D(posPlayerX, posPlayerY)
                         );
                     }
-                    posPlayer[0]-=5;
                 }
                 else{
-                    if(gameLost != 1 && gameState != 0 && getGameWorld().getEntitiesByType(ExampleGameFactory.ExampleType.PLAYER).get(0).getX() > 0){
-                        getGameWorld().getEntitiesByType(ExampleGameFactory.ExampleType.PLAYER)
+                    if(gameLost != 1 && gameState != 0 && getGameWorld().getEntitiesByType(GameFactory.EntityType.PLAYER).get(0).getX() > 0){
+                        getGameWorld().getEntitiesByType(GameFactory.EntityType.PLAYER)
                                 .forEach(e -> e.translateX(-5));
                     }
-                    posPlayer[0]-=5;
                 }
             }
         }, KeyCode.A);
@@ -155,7 +155,7 @@ public class BasicGameApp extends GameApplication {
                 uiText3.setText("Balls: " + game.getBallsLeft());
                 if(gameLost != 1 && gameState == 0 && bricksOnScreen.size() > 0){
                     gameState = 1;
-                    getGameWorld().getEntitiesByType(ExampleType.BALL).get(0).getComponent(PhysicsComponent.class).setLinearVelocity(5 * 60, -5 * 60);
+                    getGameWorld().getEntitiesByType(EntityType.BALL).get(0).getComponent(PhysicsComponent.class).setLinearVelocity(5 * 60, -5 * 60);
                 }
             }
 
@@ -191,7 +191,7 @@ public class BasicGameApp extends GameApplication {
     protected void initPhysics() {
         getPhysicsWorld().setGravity(0,0);
         getPhysicsWorld().addCollisionHandler(
-                new CollisionHandler(ExampleType.BALL, ExampleType.WALL) {
+                new CollisionHandler(EntityType.BALL, EntityType.WALL) {
                     @Override
                     protected void onHitBoxTrigger(Entity ball, Entity wall,
                                                    HitBox boxBall, HitBox boxWall) {
@@ -203,10 +203,12 @@ public class BasicGameApp extends GameApplication {
                             if (game.isGameOver()) {
                                 gameState = 0;
                                 gameLost = 1;
-                                uiText2.setText("Perdiste :'(, presiona R para comenzar un juego denuevo");
+                                uiText2.setText("Perdiste :'(, presiona R para reiniciar");
                             }else{
                                 gameState = 0;
-                                ball = newBall(posPlayer[0],posPlayer[1]);
+                                double posPlayerX = getGameWorld().getEntitiesByType(EntityType.PLAYER).get(0).getX() + getGameWorld().getEntitiesByType(EntityType.PLAYER).get(0).getWidth()/2;
+                                double posPlayerY = getGameWorld().getEntitiesByType(EntityType.PLAYER).get(0).getY()-getGameWorld().getEntitiesByType(EntityType.PLAYER).get(0).getHeight()/2;
+                                ball = newBall(posPlayerX, posPlayerY);
                                 getGameWorld().addEntity(ball);
                             }
                         }else{
@@ -216,7 +218,7 @@ public class BasicGameApp extends GameApplication {
                 });
 
         getPhysicsWorld().addCollisionHandler(
-                new CollisionHandler(ExampleType.PLAYER, ExampleType.BALL) {
+                new CollisionHandler(EntityType.PLAYER, EntityType.BALL) {
                     @Override
                     protected void onHitBoxTrigger(Entity player, Entity ball, HitBox boxPlayer, HitBox boxBall) {
                         if(ball.getComponent(PhysicsComponent.class).getVelocityY() != 0){
@@ -227,7 +229,7 @@ public class BasicGameApp extends GameApplication {
                 }
         );
         getPhysicsWorld().addCollisionHandler(
-                new CollisionHandler(ExampleType.BRICK, ExampleType.BALL) {
+                new CollisionHandler(EntityType.BRICK, EntityType.BALL) {
                     @Override
                     protected void onHitBoxTrigger(Entity brick, Entity ball, HitBox boxBrick, HitBox boxBall) {
                         hit(brick);
@@ -269,8 +271,8 @@ public class BasicGameApp extends GameApplication {
             DSLKt.centerText(uiText2);
             getAudioPlayer().playMusic("victory.mp3");
             gameLost = 1;
-            getGameWorld().getEntitiesByType(ExampleType.BALL).get(0).getComponent(PhysicsComponent.class).setLinearVelocity(0,0);
-            uiText2.setText("GANASTEEEEEEEEEEEEE, R para reiniciar");
+            getGameWorld().getEntitiesByType(EntityType.BALL).get(0).getComponent(PhysicsComponent.class).setLinearVelocity(0,0);
+            uiText2.setText("GANASTEEEEEEEEEE, R para reiniciar");
         }
     }
 
@@ -298,7 +300,7 @@ public class BasicGameApp extends GameApplication {
     }
 
     public void clearBricks(){
-        getGameWorld().getEntitiesByType(ExampleType.BRICK).forEach(e -> e.removeFromWorld());
+        getGameWorld().getEntitiesByType(EntityType.BRICK).forEach(e -> e.removeFromWorld());
         bricksOnScreen.clear();
     }
 
